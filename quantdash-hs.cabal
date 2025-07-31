@@ -1,0 +1,40 @@
+cabal-version:   3.0
+name:            quantdash-hs
+version:         0.1.0.0
+license:         MIT
+license-file:    LICENSE
+author:          Akshay Sachdeva
+maintainer:      asachdeva@alumni.utexas.net
+build-type:      Simple
+extra-doc-files: README.md
+
+executable quantdash-hs
+  hs-source-dirs:      src
+  main-is:             Main.hs
+  other-modules:       Api 
+
+build-depends:
+    base >= 4.14 && < 5,
+    servant,
+    servant-server,
+    aeson,
+    warp,
+    bytestring,
+    text,
+    vector,
+    cassava,
+    time,
+    containers
+
+
+common warnings
+    ghc-options: -Wall
+
+executable quantdash-hs
+    import:           warnings
+    main-is:          Main.hs
+    build-depends:    base ^>=4.20.0.0
+    hs-source-dirs:   src
+    default-language: GHC2021
+
+
