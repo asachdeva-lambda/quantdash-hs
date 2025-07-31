@@ -1,21 +1,13 @@
-module Backtest (runBacktest, runBacktestIO) where
+module Backtest (runBacktestIO) where
 
 import Common.BacktestTypes
-import Data.Market (loadCSV)
-import Strategy.MA (maCrossoverStrategy)
+import Common.Types (OHLC)
+import Conduit
+import Strategy.MA (runMAStrategy)
 
-runBacktest :: BacktestRequest -> BacktestResult
-runBacktest req = BacktestResult total (length trades)
-  where
-    -- assumes a file like "data/AAPL.csv"
-    filePath = "data/" ++ ticker req ++ ".csv"
-    result = error "Backtest should be run in IO. Use runBacktestIO instead."
-    trades = []
-    total = 0.0
-
--- Add this for full functionality:
-runBacktestIO :: BacktestRequest -> IO BacktestResult
-runBacktestIO req = do
-  ohlc <- loadCSV ("data/" ++ ticker req ++ ".csv")
-  let (trades, totalReturn) = maCrossoverStrategy ohlc
-  return $ BacktestResult totalReturn (length trades)
+-- Accept a Conduit source of OHLC data
+runBacktestIO :: (MonadIO m) => ConduitT () OHLC m () -> BacktestRequest -> m BacktestResult
+runBacktestIO ohlcStream req = do
+  ohlcData <- runConduit $ ohlcStream .| sinkList
+  let result = runMAStrategy ohlcData req
+  return result

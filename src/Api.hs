@@ -1,31 +1,26 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeOperators #-}
 
-module Api (api, server, API, app) where
+module Api (app) where
 
 import Backtest (runBacktestIO)
-import Common.BacktestTypes (BacktestRequest, BacktestResult)
-import Control.Monad.IO.Class (liftIO)
+import Common.BacktestTypes
 import Network.Wai (Application)
 import Servant
-import Servant (serve)
 import Servant.Server
+import Streaming.JetStream (jetStreamOHLCSource)
 
--- Define the API type
+-- API Type
 type API = "backtest" :> ReqBody '[JSON] BacktestRequest :> Post '[JSON] BacktestResult
 
--- API proxy
-api :: Proxy API
-api = Proxy
-
--- Server handler
 server :: Server API
-server = handleBacktest
+server = backtestHandler
 
-handleBacktest :: BacktestRequest -> Handler BacktestResult
-handleBacktest req = liftIO $ runBacktestIO req
+-- Handler that streams OHLC data from JetStream
+backtestHandler :: BacktestRequest -> Handler BacktestResult
+backtestHandler req = liftIO $ runBacktestIO jetStreamOHLCSource req
+
+app :: Application
+app = serve (Proxy :: Proxy API) server
 
 -- WAI application
 app :: Application

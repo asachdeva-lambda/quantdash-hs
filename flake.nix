@@ -22,7 +22,8 @@
             haskellPackages.ghc
             haskellPackages.hlint
             haskellPackages.ormolu
-            zlib
+            haskellPackages.nats
+            haskellPackages.conduit
             # add others like sqlite/postgresql here if needed
           ];
           shellHook = ''

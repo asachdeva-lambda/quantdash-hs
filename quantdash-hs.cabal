@@ -12,24 +12,30 @@ executable quantdash-hs
   main-is:             Main.hs
   hs-source-dirs:      app, src
   build-depends:
-      base >=4.14 && <5,
-      servant,
-      servant-server,
-      warp,
-      aeson,
-      bytestring,
-      text,
-      vector,
-      cassava,
-      time,
-      containers,
-      wai
+    base,
+    aeson,
+    servant,
+    servant-server,
+    warp,
+    text,
+    time,
+    wai,
+    vector,
+    cassava,
+    bytestring,
+    conduit,
+    http-client,
+    http-client-tls,
+    http-types,
+    unordered-containers,
+    containers
+
   default-language:    GHC2021
   other-modules:
     Api
-    Backtest
     Common.Types
     Common.BacktestTypes
+    Streaming.JetStream
     Strategy.MA
     Data.Market
 

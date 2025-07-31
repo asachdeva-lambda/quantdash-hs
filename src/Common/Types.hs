@@ -1,9 +1,20 @@
-{-# LANGUAGE DeriveGeneric #-}
-
-module Common.Types where
+module Common.Types
+  ( OHLC (..), -- <-- this needs to be added
+  )
+where
 
 import Data.Aeson
+import Data.Time (Day)
 import GHC.Generics
+
+data OHLC = OHLC
+  { date :: Day,
+    open :: Double,
+    high :: Double,
+    low :: Double,
+    close :: Double
+  }
+  deriving (Show, Eq)
 
 data BacktestRequest = BacktestRequest
   { ticker :: String,

@@ -1,10 +1,14 @@
--- app/Main.hs
+{-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
-import Api (app)
-import Network.Wai.Handler.Warp (run)
+import qualified Streaming.JetStream as JS
+import qualified Backtest.Conduit as BC
+import Data.Conduit ((.|), runConduit)
 
 main :: IO ()
 main = do
-  putStrLn "🚀 QuantDash Haskell backend running on http://localhost:8080"
-  run 8080 app
+    let baseUrl = "http://localhost:8222/api/v1" -- Replace with JetStream mgmt API
+        consumer = "backtest-consumer"
+    runConduit $ JS.jetStreamSource baseUrl consumer .| BC.processMessages
+
