@@ -9,32 +9,28 @@ build-type:      Simple
 extra-doc-files: README.md
 
 executable quantdash-hs
-  hs-source-dirs:      src
   main-is:             Main.hs
-  other-modules:       Api 
-
-build-depends:
-    base >= 4.14 && < 5,
-    servant,
-    servant-server,
-    aeson,
-    warp,
-    bytestring,
-    text,
-    vector,
-    cassava,
-    time,
-    containers
-
-
-common warnings
-    ghc-options: -Wall
-
-executable quantdash-hs
-    import:           warnings
-    main-is:          Main.hs
-    build-depends:    base ^>=4.20.0.0
-    hs-source-dirs:   src
-    default-language: GHC2021
+  hs-source-dirs:      app, src
+  build-depends:
+      base >=4.14 && <5,
+      servant,
+      servant-server,
+      warp,
+      aeson,
+      bytestring,
+      text,
+      vector,
+      cassava,
+      time,
+      containers,
+      wai
+  default-language:    GHC2021
+  other-modules:
+    Api
+    Backtest
+    Common.Types
+    Common.BacktestTypes
+    Strategy.MA
+    Data.Market
 
 

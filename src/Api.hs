@@ -1,37 +1,32 @@
--- src/Api.hs
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Api (app) where
+module Api (api, server, API, app) where
 
+import Backtest (runBacktestIO)
+import Common.BacktestTypes (BacktestRequest, BacktestResult)
+import Control.Monad.IO.Class (liftIO)
+import Network.Wai (Application)
 import Servant
-import GHC.Generics
-import Network.Wai
-import Data.Aeson
-import Backtest (runBacktest)
+import Servant (serve)
+import Servant.Server
 
-data BacktestRequest = BacktestRequest
-  { ticker :: String
-  , strategy :: String
-  } deriving (Show, Generic)
-
-instance FromJSON BacktestRequest
-
-data BacktestResult = BacktestResult
-  { totalReturn :: Double
-  , trades      :: Int
-  } deriving (Show, Generic)
-
-instance ToJSON BacktestResult
-
+-- Define the API type
 type API = "backtest" :> ReqBody '[JSON] BacktestRequest :> Post '[JSON] BacktestResult
 
+-- API proxy
+api :: Proxy API
+api = Proxy
+
+-- Server handler
 server :: Server API
-server = handler
-  where
-    handler req = pure $ runBacktest req
+server = handleBacktest
 
+handleBacktest :: BacktestRequest -> Handler BacktestResult
+handleBacktest req = liftIO $ runBacktestIO req
+
+-- WAI application
 app :: Application
-app = serve (Proxy :: Proxy API) server
-
+app = serve api server
